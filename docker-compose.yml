@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stacks_academy_postgres
+    environment:
+      POSTGRES_USER: stacks_academy
+      POSTGRES_PASSWORD: stacks_academy_dev
+      POSTGRES_DB: stacks_academy
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U stacks_academy']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: stacks_academy_api
+    ports:
+      - '3001:3001'
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: pnpm run start:dev
+
+volumes:
+  postgres_data:
