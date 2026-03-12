@@ -8,7 +8,7 @@ import { User } from '@app/database/entities/user.entity';
 import { PaginationDto } from '@app/common/dto/pagination.dto';
 import { GalleryService } from './gallery.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { ProjectFilterDto } from './dto/project-filter.dto';
+import { GalleryQueryDto } from './dto/gallery-query.dto';
 
 @ApiTags('gallery')
 @ApiBearerAuth('JWT')
@@ -19,8 +19,8 @@ export class GalleryController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'Paginated list of approved community projects' })
-  findAll(@Query() filter: ProjectFilterDto, @Query() pagination: PaginationDto) {
-    return this.galleryService.findAll(filter, pagination);
+  findAll(@Query() query: GalleryQueryDto) {
+    return this.galleryService.findAll(query, query);
   }
 
   @Post()

@@ -25,13 +25,13 @@ export class GalleryService {
     const qb = this.projectRepo
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.user', 'user')
-      .where('p.moderation_status = :status', { status: ModerationStatus.APPROVED });
+      .where('p.moderationStatus = :status', { status: ModerationStatus.APPROVED });
 
     if (filter.category) {
       qb.andWhere('p.category = :category', { category: filter.category });
     }
 
-    qb.orderBy('p.vote_count', 'DESC').skip(pagination.skip).take(pagination.limit);
+    qb.orderBy('p.voteCount', 'DESC').skip(pagination.skip).take(pagination.limit);
 
     const [data, total] = await qb.getManyAndCount();
     return { data, meta: { total, page: pagination.page, limit: pagination.limit } };
