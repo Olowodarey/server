@@ -99,3 +99,21 @@ docker run -p 3001:3001 --env-file .env stacks-academy-api
 * **Standard Errors**: `GlobalExceptionFilter` serializes all errors avoiding generic HTML responses.
 * **Pagination**: Lists utilize standard `page` and `limit` URL queries mapped via `PaginationDto`.
 * **Security**: DTO whitelist validation is strictly enforced; most routes default to `@ApiBearerAuth('JWT')` protection unless explicitly marked `@Public()`.
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for Continuous Integration and Continuous Deployment.
+
+### Workflows
+1. **Tests (`tests.yml`)**: Runs on every push and pull request to `main` and `develop`. It executes linting, unit tests, and E2E tests.
+2. **Build & Push (`deploy.yml`)**: Runs automatically after the **Tests** workflow completes successfully on the `main` branch. It builds the production Docker image and pushes it to [GitHub Container Registry (GHCR)](https://github.com/features/packages).
+
+### Deployment
+The server is packaged as a Docker image: `ghcr.io/${{ github.repository }}-server:latest`.
+
+To deploy this image:
+1. **Pull the image**: `docker pull ghcr.io/<username>/stacks-academy-server:latest`
+2. **Environment Variables**: Ensure all required secrets are passed to the container (see `.env.example`).
+
+> [!TIP]
+> To automate deployment to platforms like Render, Railway, or a VPS, you can add a deployment step to `.github/workflows/deploy.yml` using their respective GitHub Actions or a web hook.
