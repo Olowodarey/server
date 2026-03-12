@@ -93,7 +93,7 @@ export class CoursesService {
     const course = this.getCourseById(courseId);
     if (!course) return null;
 
-    return course.lessons.map((lesson) => ({
+    const lessons = course.lessons.map((lesson) => ({
       ...lesson,
       steps: lesson.steps.map((step) => {
         const record = progressRecords.find(
@@ -102,6 +102,17 @@ export class CoursesService {
         return { ...step, state: record?.state ?? StepState.LOCKED };
       }),
     }));
+
+    const totalSteps = course.lessons.reduce((acc, l) => acc + l.steps.length, 0);
+    const completedSteps = progressRecords.filter((p) => p.state === StepState.COMPLETED)
+      .length;
+
+    return {
+      lessons,
+      totalSteps,
+      completedSteps,
+      progressPercentage: totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0,
+    };
   }
 
   async completeStep(userId: string, courseId: number, lessonId: number, stepId: number) {

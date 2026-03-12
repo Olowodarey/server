@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, NotFoundException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '@app/common/decorators/public.decorator';
 import { CurrentUser } from '@app/common/decorators/current-user.decorator';
@@ -21,14 +21,22 @@ export class CoursesController {
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a single course with its lessons' })
-  getCourse(@Param('id', ParseIntPipe) id: number) {
-    return this.coursesService.getCourseById(id);
+  async getCourse(@Param('id', ParseIntPipe) id: number) {
+    const course = await this.coursesService.getCourseById(id);
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
+    }
+    return course;
   }
 
   @Get(':id/progress')
   @ApiOperation({ summary: "Get user's progress for a course" })
-  getCourseProgress(@CurrentUser() user: User, @Param('id', ParseIntPipe) id: number) {
-    return this.coursesService.getUserProgress(user.id, id);
+  async getCourseProgress(@CurrentUser() user: User, @Param('id', ParseIntPipe) id: number) {
+    const progress = await this.coursesService.getUserProgress(user.id, id);
+    if (!progress) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
+    }
+    return progress;
   }
 
   @Post(':courseId/lessons/:lessonId/steps/:stepId/complete')
