@@ -5,11 +5,25 @@ import { QuizSession } from '@app/database/entities/quiz-session.entity';
 import { AssessmentsController } from './assessments.controller';
 import { AssessmentsService } from './assessments.service';
 import { AiGraderService } from './grader/ai-grader.service';
+import { QuizGeneratorService } from './generators/quiz-generator.service';
+import { PromptBuilderService } from './generators/prompt-builder.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([QuizSession]), HttpModule],
+  imports: [
+    TypeOrmModule.forFeature([QuizSession]),
+    HttpModule.register({
+      timeout: 120000,
+      maxRedirects: 5,
+      proxy: false, // Disable proxy
+    }),
+  ],
   controllers: [AssessmentsController],
-  providers: [AssessmentsService, AiGraderService],
+  providers: [
+    AssessmentsService,
+    AiGraderService,
+    QuizGeneratorService,
+    PromptBuilderService,
+  ],
   exports: [AssessmentsService],
 })
 export class AssessmentsModule {}
