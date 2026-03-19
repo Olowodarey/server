@@ -63,6 +63,11 @@ export class QuizGeneratorService {
       // Shuffle multiple-choice options to ensure randomization
       const shuffledQuestions = this.shuffleMultipleChoiceOptions(questions);
 
+      // Log answers in development mode
+      if (process.env.NODE_ENV === 'development') {
+        this.logAnswersForDev(shuffledQuestions, topic);
+      }
+
       return { questions: shuffledQuestions };
     } catch (error) {
       this.logger.error('Failed to generate quiz', error);
@@ -217,5 +222,36 @@ export class QuizGeneratorService {
         correctOptionId: newCorrectId,
       };
     });
+  }
+
+  /**
+   * Log correct answers in development mode for easier testing
+   */
+  private logAnswersForDev(questions: Question[], topic: string): void {
+    this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    this.logger.log(`📝 DEV MODE: Quiz Answers for "${topic}"`);
+    this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    questions.forEach((question, index) => {
+      if (question.type === QuestionType.MULTIPLE_CHOICE) {
+        const mcQuestion = question as any;
+        this.logger.log(`\nQ${index + 1} [Multiple Choice]: ${question.question.substring(0, 80)}...`);
+        this.logger.log(`   ✅ Correct Answer: ${mcQuestion.correctOptionId.toUpperCase()}`);
+        
+        // Show all options
+        mcQuestion.options.forEach((opt: any) => {
+          const marker = opt.id === mcQuestion.correctOptionId ? '✅' : '  ';
+          this.logger.log(`   ${marker} ${opt.id.toUpperCase()}. ${opt.text.substring(0, 60)}...`);
+        });
+      } else {
+        const oeQuestion = question as any;
+        this.logger.log(`\nQ${index + 1} [Open-Ended]: ${question.question.substring(0, 80)}...`);
+        this.logger.log(`   💡 Model Answer: ${oeQuestion.modelAnswer.substring(0, 100)}...`);
+      }
+    });
+    
+    this.logger.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    this.logger.log('💡 TIP: In dev mode, all multiple-choice answers are option A');
+    this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   }
 }

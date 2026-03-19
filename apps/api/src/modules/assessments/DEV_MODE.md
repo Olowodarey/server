@@ -20,6 +20,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 - ✅ All multiple-choice correct answers are set to option 'A'
 - ✅ Makes testing faster - just select 'A' for all questions
 - ✅ Logs: "DEV MODE: Setting all correct answers to option A"
+- ✅ **Logs all correct answers to terminal after quiz generation**
+- ✅ Shows question text, correct option, and all choices
 - ✅ Perfect scores guaranteed for testing XP rewards
 
 #### Production Mode (`NODE_ENV=production`)
@@ -153,9 +155,34 @@ Development mode logs to console:
 
 ```
 [QuizGeneratorService] DEV MODE: Setting all correct answers to option A
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 DEV MODE: Quiz Answers for "Introduction to Stacks"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q1 [Multiple Choice]: What is the primary purpose of Stacks blockchain?...
+   ✅ Correct Answer: A
+   ✅ A. Enable smart contracts on Bitcoin...
+      B. Replace Bitcoin as a cryptocurrency...
+      C. Create a new proof-of-work chain...
+      D. Compete with Ethereum...
+
+Q2 [Multiple Choice]: What consensus mechanism does Stacks use?...
+   ✅ Correct Answer: A
+   ✅ A. Proof of Transfer (PoX)...
+      B. Proof of Work...
+      C. Proof of Stake...
+      D. Delegated Proof of Stake...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 TIP: In dev mode, all multiple-choice answers are option A
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-This helps you confirm dev mode is active.
+This helps you:
+- Verify quiz generation is working
+- See all questions and options at a glance
+- Quickly check answer correctness
+- Debug quiz content issues
 
 ## Security Notes
 
