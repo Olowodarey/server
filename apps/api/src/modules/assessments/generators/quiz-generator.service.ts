@@ -59,8 +59,11 @@ export class QuizGeneratorService {
       const questions = this.parseQuestions(rawText);
 
       this.validateQuestions(questions, format);
+      
+      // Shuffle multiple-choice options to ensure randomization
+      const shuffledQuestions = this.shuffleMultipleChoiceOptions(questions);
 
-      return { questions };
+      return { questions: shuffledQuestions };
     } catch (error) {
       this.logger.error('Failed to generate quiz', error);
       throw new Error(`Quiz generation failed: ${error.message}`);
@@ -139,5 +142,45 @@ export class QuizGeneratorService {
     this.logger.debug(
       `Validated ${questions.length} questions (${questions.filter((q) => q.type === QuestionType.MULTIPLE_CHOICE).length} MC, ${questions.filter((q) => q.type === QuestionType.OPEN_ENDED).length} OE)`,
     );
+  }
+
+  /**
+   * Shuffle multiple-choice options to randomize correct answer position
+   */
+  private shuffleMultipleChoiceOptions(questions: Question[]): Question[] {
+    return questions.map((question) => {
+      if (question.type !== QuestionType.MULTIPLE_CHOICE) {
+        return question;
+      }
+
+      const mcQuestion = question as any;
+      const options = [...mcQuestion.options];
+      
+      // Fisher-Yates shuffle algorithm
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+
+      // Reassign IDs based on new positions
+      const correctOption = mcQuestion.options.find(
+        (opt: any) => opt.id === mcQuestion.correctOptionId,
+      );
+      
+      const shuffledOptions = options.map((opt: any, index: number) => ({
+        ...opt,
+        id: ['a', 'b', 'c', 'd'][index],
+      }));
+
+      const newCorrectId = shuffledOptions.find(
+        (opt: any) => opt.text === correctOption.text,
+      )?.id;
+
+      return {
+        ...mcQuestion,
+        options: shuffledOptions,
+        correctOptionId: newCorrectId,
+      };
+    });
   }
 }

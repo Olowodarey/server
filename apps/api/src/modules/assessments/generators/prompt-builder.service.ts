@@ -48,6 +48,7 @@ Each question should:
         return `FORMAT: All questions must be multiple-choice.
 - Each question must have exactly 4 options (labeled a, b, c, d)
 - Only one option should be correct
+- IMPORTANT: Randomize which option (a, b, c, or d) is correct - do NOT always make option 'a' correct
 - Incorrect options should be plausible but clearly wrong
 - Include code snippets where relevant`;
 
@@ -62,6 +63,7 @@ Each question should:
         return `FORMAT: Mix multiple-choice and open-ended questions.
 - Include 3 multiple-choice questions (with 4 options each)
 - Include 2 open-ended questions (with model answers)
+- For multiple-choice: RANDOMIZE which option is correct - do NOT always make option 'a' correct
 - Alternate between types for variety
 - Include code snippets where relevant`;
 
@@ -98,7 +100,7 @@ Each question should:
     { "id": "c", "text": "Option C text" },
     { "id": "d", "text": "Option D text" }
   ],
-  "correctOptionId": "a",
+  "correctOptionId": "b",  // Can be "a", "b", "c", or "d" - RANDOMIZE THIS
   "explanation": "Detailed explanation of the correct answer"
 }`;
 
