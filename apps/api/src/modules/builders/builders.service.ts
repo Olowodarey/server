@@ -24,7 +24,35 @@ export class BuildersService {
   }
 
   async submit(userId: string, dto: SubmitBuilderDto) {
-    const profile = this.repo.create({ ...dto, submittedBy: userId, isApproved: false });
+    // Generate initials from name (first 2 letters)
+    const initials = dto.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2) || 'SA';
+
+    // Generate a random gradient for avatar
+    const gradients = [
+      'from-blue-500 to-purple-600',
+      'from-purple-500 to-pink-600',
+      'from-green-500 to-teal-600',
+      'from-orange-500 to-red-600',
+      'from-yellow-500 to-orange-600',
+      'from-indigo-500 to-blue-600',
+      'from-pink-500 to-rose-600',
+      'from-teal-500 to-cyan-600',
+    ];
+    const avatarGradient = gradients[Math.floor(Math.random() * gradients.length)];
+
+    const profile = this.repo.create({
+      ...dto,
+      submittedBy: userId,
+      isApproved: false,
+      initials,
+      avatarGradient,
+    });
+
     return this.repo.save(profile);
   }
 }

@@ -36,10 +36,10 @@ export class BuilderProfile extends BaseEntity {
   @Column({ nullable: true, length: 50 })
   followers: string;
 
-  @Column({ name: 'avatar_gradient', length: 100 })
+  @Column({ name: 'avatar_gradient', length: 100, default: 'from-blue-500 to-purple-600' })
   avatarGradient: string;
 
-  @Column({ length: 10 })
+  @Column({ length: 10, default: 'SA' })
   initials: string;
 
   @Column({ name: 'is_approved', default: false })
