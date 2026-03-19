@@ -18,7 +18,13 @@ export const LEVEL_THRESHOLDS = [
   { level: 1, title: 'Stacker Novice', xp: 0 },
   { level: 2, title: 'Clarity Coder', xp: 500 },
   { level: 3, title: 'Bitcoin Builder', xp: 1500 },
-  { level: 4, title: 'L2 Architect', xp: 4000 },
+  { level: 4, title: 'L2 Architect', xp: 3500 },
+  { level: 5, title: 'Smart Contract Developer', xp: 6500 },
+  { level: 6, title: 'DeFi Engineer', xp: 10500 },
+  { level: 7, title: 'Protocol Expert', xp: 15500 },
+  { level: 8, title: 'Blockchain Architect', xp: 22000 },
+  { level: 9, title: 'Stacks Master', xp: 30000 },
+  { level: 10, title: 'Bitcoin L2 Legend', xp: 40000 },
 ];
 
 @Injectable()
@@ -65,12 +71,19 @@ export class XpService {
   getLevelInfo(xp: number) {
     const current = LEVEL_THRESHOLDS.filter((t) => xp >= t.xp).at(-1);
     const next = LEVEL_THRESHOLDS.find((t) => t.xp > xp);
+    
+    const currentLevelXp = current.xp;
+    const nextLevelXp = next?.xp ?? current.xp;
+    const progress = next 
+      ? (xp - currentLevelXp) / (nextLevelXp - currentLevelXp)
+      : 1.0;
+    
     return {
+      xpTotal: xp,
       level: current.level,
-      title: current.title,
-      currentXp: xp,
-      nextLevelXp: next?.xp ?? null,
-      xpToNext: next ? next.xp - xp : 0,
+      currentLevelXp,
+      nextLevelXp,
+      progress: Math.min(progress, 1.0),
     };
   }
 }
