@@ -2,17 +2,19 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  ConflictException,
   Logger,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { GalleryProject, ModerationStatus } from '@app/database/entities/gallery-project.entity';
-import { ProjectVote } from '@app/database/entities/project-vote.entity';
-import { PaginationDto } from '@app/common/dto/pagination.dto';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { ProjectFilterDto } from './dto/project-filter.dto';
-import { ModerateProjectDto } from './dto/moderate-project.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import {
+  GalleryProject,
+  ModerationStatus,
+} from "@app/database/entities/gallery-project.entity";
+import { ProjectVote } from "@app/database/entities/project-vote.entity";
+import { PaginationDto } from "@app/common/dto/pagination.dto";
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { ProjectFilterDto } from "./dto/project-filter.dto";
+import { ModerateProjectDto } from "./dto/moderate-project.dto";
 
 @Injectable()
 export class GalleryService {
@@ -23,22 +25,29 @@ export class GalleryService {
     private readonly projectRepo: Repository<GalleryProject>,
     @InjectRepository(ProjectVote)
     private readonly voteRepo: Repository<ProjectVote>,
-  ) { }
+  ) {}
 
   async findAll(filter: ProjectFilterDto, pagination: PaginationDto) {
     const qb = this.projectRepo
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('p.user', 'user')
-      .where('p.moderationStatus = :status', { status: ModerationStatus.APPROVED });
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.user", "user")
+      .where("p.moderationStatus = :status", {
+        status: ModerationStatus.APPROVED,
+      });
 
     if (filter.category) {
-      qb.andWhere('p.category = :category', { category: filter.category });
+      qb.andWhere("p.category = :category", { category: filter.category });
     }
 
-    qb.orderBy('p.voteCount', 'DESC').skip(pagination.skip).take(pagination.limit);
+    qb.orderBy("p.voteCount", "DESC")
+      .skip(pagination.skip)
+      .take(pagination.limit);
 
     const [data, total] = await qb.getManyAndCount();
-    return { data, meta: { total, page: pagination.page, limit: pagination.limit } };
+    return {
+      data,
+      meta: { total, page: pagination.page, limit: pagination.limit },
+    };
   }
 
   async create(userId: string, dto: CreateProjectDto) {
@@ -47,35 +56,42 @@ export class GalleryService {
   }
 
   async findOne(id: string) {
-    const project = await this.projectRepo.findOne({ where: { id }, relations: ['user'] });
-    if (!project) throw new NotFoundException('Project not found');
+    const project = await this.projectRepo.findOne({
+      where: { id },
+      relations: ["user"],
+    });
+    if (!project) throw new NotFoundException("Project not found");
     return project;
   }
 
   async update(userId: string, id: string, dto: Partial<CreateProjectDto>) {
     const project = await this.findOne(id);
-    if (project.userId !== userId) throw new ForbiddenException('Not your project');
+    if (project.userId !== userId)
+      throw new ForbiddenException("Not your project");
     Object.assign(project, dto);
     return this.projectRepo.save(project);
   }
 
   async remove(userId: string, id: string) {
     const project = await this.findOne(id);
-    if (project.userId !== userId) throw new ForbiddenException('Not your project');
+    if (project.userId !== userId)
+      throw new ForbiddenException("Not your project");
     await this.projectRepo.remove(project);
     return { deleted: true };
   }
 
   async toggleVote(userId: string, projectId: string) {
-    const existing = await this.voteRepo.findOne({ where: { userId, projectId } });
+    const existing = await this.voteRepo.findOne({
+      where: { userId, projectId },
+    });
 
     if (existing) {
       await this.voteRepo.remove(existing);
-      await this.projectRepo.decrement({ id: projectId }, 'voteCount', 1);
+      await this.projectRepo.decrement({ id: projectId }, "voteCount", 1);
       return { voted: false };
     } else {
       await this.voteRepo.save(this.voteRepo.create({ userId, projectId }));
-      await this.projectRepo.increment({ id: projectId }, 'voteCount', 1);
+      await this.projectRepo.increment({ id: projectId }, "voteCount", 1);
       return { voted: true };
     }
   }
@@ -85,23 +101,31 @@ export class GalleryService {
    */
   async findPending(pagination: PaginationDto) {
     const qb = this.projectRepo
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('p.user', 'user')
-      .where('p.moderationStatus = :status', { status: ModerationStatus.PENDING })
-      .orderBy('p.createdAt', 'DESC')
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.user", "user")
+      .where("p.moderationStatus = :status", {
+        status: ModerationStatus.PENDING,
+      })
+      .orderBy("p.createdAt", "DESC")
       .skip(pagination.skip)
       .take(pagination.limit);
 
     const [data, total] = await qb.getManyAndCount();
-    return { data, meta: { total, page: pagination.page, limit: pagination.limit } };
+    return {
+      data,
+      meta: { total, page: pagination.page, limit: pagination.limit },
+    };
   }
 
   /**
    * Admin: Moderate a project (approve/reject)
    */
   async moderate(id: string, dto: ModerateProjectDto) {
-    const project = await this.projectRepo.findOne({ where: { id }, relations: ['user'] });
-    if (!project) throw new NotFoundException('Project not found');
+    const project = await this.projectRepo.findOne({
+      where: { id },
+      relations: ["user"],
+    });
+    if (!project) throw new NotFoundException("Project not found");
 
     const oldStatus = project.moderationStatus;
     project.moderationStatus = dto.status;
@@ -109,7 +133,7 @@ export class GalleryService {
     const updated = await this.projectRepo.save(project);
 
     this.logger.log(
-      `Project ${id} moderation status changed from ${oldStatus} to ${dto.status}. Notes: ${dto.notes || 'None'}`,
+      `Project ${id} moderation status changed from ${oldStatus} to ${dto.status}. Notes: ${dto.notes || "None"}`,
     );
 
     return updated;
