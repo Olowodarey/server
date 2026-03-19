@@ -2,6 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { Logger } from "nestjs-pino";
+import { getDataSourceToken } from "@nestjs/typeorm";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -9,6 +10,16 @@ async function bootstrap() {
 
   // Use Pino structured logger
   app.useLogger(app.get(Logger));
+
+  // Run pending migrations on startup
+  try {
+    const dataSource = app.get(getDataSourceToken());
+    await dataSource.runMigrations();
+    console.log("✅ Database migrations applied");
+  } catch (err) {
+    console.error("❌ Migration failed:", err);
+    process.exit(1);
+  }
 
   // Global API prefix
   const apiPrefix = process.env.API_PREFIX || "api/v1";
