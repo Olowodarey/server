@@ -21,7 +21,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   /**
    * Generate a sign challenge nonce for the given wallet address.
@@ -32,10 +32,16 @@ export class AuthService {
 
     nonceStore.set(walletAddress, { nonce, expiresAt });
 
+    const message = `Sign this message to authenticate with Stacks Academy.\n\nNonce: ${nonce}`;
+
+    console.log("[Auth] Challenge generated for wallet:", walletAddress);
+    console.log("[Auth] Nonce:", nonce);
+    console.log("[Auth] Message:", message);
+
     return {
       nonce,
       expiresAt,
-      message: `Sign this message to authenticate with Stacks Academy.\n\nNonce: ${nonce}`,
+      message,
     };
   }
 
@@ -43,51 +49,96 @@ export class AuthService {
    * Verify a signed challenge and issue a JWT.
    */
   async verifySignature(dto: VerifySignatureDto) {
-    const { walletAddress, signature, publicKey } = dto;
-
-    const stored = nonceStore.get(walletAddress);
-    if (!stored) {
-      throw new BadRequestException(
-        "No pending challenge for this wallet address",
-      );
-    }
-
-    if (new Date() > stored.expiresAt) {
-      nonceStore.delete(walletAddress);
-      throw new UnauthorizedException(
-        "Challenge has expired. Please request a new one.",
-      );
-    }
-
-    // Verify the signature against the nonce message
-    const message = `Sign this message to authenticate with Stacks Academy.\n\nNonce: ${stored.nonce}`;
-
-    let isValid = false;
     try {
-      isValid = verifyMessageSignatureRsv({
-        message,
-        signature,
-        publicKey,
-      });
-    } catch {
-      throw new UnauthorizedException("Invalid signature format");
+      const { walletAddress, signature, publicKey } = dto;
+
+      console.log("[Auth] Verifying signature for wallet:", walletAddress);
+      console.log("[Auth] Signature length:", signature?.length);
+      console.log("[Auth] PublicKey length:", publicKey?.length);
+
+      const stored = nonceStore.get(walletAddress);
+      if (!stored) {
+        console.error("[Auth] No stored nonce for wallet:", walletAddress);
+        throw new BadRequestException(
+          "No pending challenge for this wallet address",
+        );
+      }
+
+      if (new Date() > stored.expiresAt) {
+        nonceStore.delete(walletAddress);
+        console.error("[Auth] Challenge expired for wallet:", walletAddress);
+        throw new UnauthorizedException(
+          "Challenge has expired. Please request a new one.",
+        );
+      }
+
+      // Verify the signature against the nonce message
+      const message = `Sign this message to authenticate with Stacks Academy.\n\nNonce: ${stored.nonce}`;
+
+      console.log("[Auth] Verifying message:", message);
+
+      let isValid = false;
+      try {
+        isValid = verifyMessageSignatureRsv({
+          message,
+          signature,
+          publicKey,
+        });
+        console.log("[Auth] Signature verification result:", isValid);
+      } catch (error) {
+        console.error("[Auth] Signature verification error:", error);
+        console.error("[Auth] Error details:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+        throw new UnauthorizedException(
+          `Invalid signature format: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+
+      if (!isValid) {
+        console.error("[Auth] Signature validation failed");
+        throw new UnauthorizedException("Invalid signature");
+      }
+
+      nonceStore.delete(walletAddress);
+
+      // Find or create user
+      console.log("[Auth] Looking up user:", walletAddress);
+      let user = await this.userRepo.findOne({ where: { walletAddress } });
+
+      if (!user) {
+        console.log("[Auth] Creating new user:", walletAddress);
+        user = this.userRepo.create({ walletAddress });
+        try {
+          user = await this.userRepo.save(user);
+          console.log("[Auth] User created successfully:", user.id);
+        } catch (dbError) {
+          console.error("[Auth] Database error creating user:", dbError);
+          throw dbError;
+        }
+      } else {
+        console.log("[Auth] Existing user found:", user.id);
+      }
+
+      const tokens = this.issueTokens(user);
+      console.log("[Auth] Tokens issued successfully");
+      return { ...tokens, user: this.sanitizeUser(user) };
+    } catch (error) {
+      // Log any unexpected errors
+      if (
+        !(error instanceof BadRequestException) &&
+        !(error instanceof UnauthorizedException)
+      ) {
+        console.error("[Auth] Unexpected error in verifySignature:", error);
+        console.error("[Auth] Error type:", error?.constructor?.name);
+        console.error("[Auth] Error details:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
+      throw error;
     }
-
-    if (!isValid) {
-      throw new UnauthorizedException("Invalid signature");
-    }
-
-    nonceStore.delete(walletAddress);
-
-    // Find or create user
-    let user = await this.userRepo.findOne({ where: { walletAddress } });
-    if (!user) {
-      user = this.userRepo.create({ walletAddress });
-      user = await this.userRepo.save(user);
-    }
-
-    const tokens = this.issueTokens(user);
-    return { ...tokens, user: this.sanitizeUser(user) };
   }
 
   issueTokens(user: User) {
