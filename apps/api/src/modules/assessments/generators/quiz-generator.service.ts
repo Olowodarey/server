@@ -146,14 +146,49 @@ export class QuizGeneratorService {
 
   /**
    * Shuffle multiple-choice options to randomize correct answer position
+   * In development mode, always sets correct answer to 'a' for easier testing
    */
   private shuffleMultipleChoiceOptions(questions: Question[]): Question[] {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    if (isDevelopment) {
+      this.logger.debug('DEV MODE: Setting all correct answers to option A');
+    }
+
     return questions.map((question) => {
       if (question.type !== QuestionType.MULTIPLE_CHOICE) {
         return question;
       }
 
       const mcQuestion = question as any;
+      
+      // In development mode, ensure correct answer is always 'a'
+      if (isDevelopment) {
+        const correctOption = mcQuestion.options.find(
+          (opt: any) => opt.id === mcQuestion.correctOptionId,
+        );
+        
+        // Remove correct option from array
+        const otherOptions = mcQuestion.options.filter(
+          (opt: any) => opt.id !== mcQuestion.correctOptionId,
+        );
+        
+        // Place correct option first, then others
+        const reorderedOptions = [correctOption, ...otherOptions].map(
+          (opt: any, index: number) => ({
+            ...opt,
+            id: ['a', 'b', 'c', 'd'][index],
+          }),
+        );
+        
+        return {
+          ...mcQuestion,
+          options: reorderedOptions,
+          correctOptionId: 'a',
+        };
+      }
+
+      // Production mode: shuffle normally
       const options = [...mcQuestion.options];
       
       // Fisher-Yates shuffle algorithm
