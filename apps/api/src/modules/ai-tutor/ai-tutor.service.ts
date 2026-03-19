@@ -24,9 +24,7 @@ const MODULE_TOPICS: Record<number, string> = {
   1: "Bitcoin Fundamentals - Bitcoin basics, blockchain, mining, transactions, UTXOs",
   2: "Introduction to Stacks - Stacks blockchain, Proof of Transfer, STX token, microblocks",
   3: "Clarity Smart Contracts - Clarity language syntax, data types, functions, traits",
-  4: "Build dApps - Frontend integration, wallet connection, contract interaction",
-  5: "Advanced Smart Contract Patterns - Security, upgradability, composability, best practices",
-  6: "Build Real Projects - DeFi protocols, NFTs, DAOs, real-world applications",
+  4: "Advanced Smart Contract Patterns - Security, upgradability, composability, best practices",
 };
 
 @Injectable()
