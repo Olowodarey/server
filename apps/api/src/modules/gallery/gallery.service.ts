@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,15 +12,18 @@ import { ProjectVote } from '@app/database/entities/project-vote.entity';
 import { PaginationDto } from '@app/common/dto/pagination.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectFilterDto } from './dto/project-filter.dto';
+import { ModerateProjectDto } from './dto/moderate-project.dto';
 
 @Injectable()
 export class GalleryService {
+  private readonly logger = new Logger(GalleryService.name);
+
   constructor(
     @InjectRepository(GalleryProject)
     private readonly projectRepo: Repository<GalleryProject>,
     @InjectRepository(ProjectVote)
     private readonly voteRepo: Repository<ProjectVote>,
-  ) {}
+  ) { }
 
   async findAll(filter: ProjectFilterDto, pagination: PaginationDto) {
     const qb = this.projectRepo
@@ -74,5 +78,40 @@ export class GalleryService {
       await this.projectRepo.increment({ id: projectId }, 'voteCount', 1);
       return { voted: true };
     }
+  }
+
+  /**
+   * Admin: Get all pending projects awaiting moderation
+   */
+  async findPending(pagination: PaginationDto) {
+    const qb = this.projectRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.user', 'user')
+      .where('p.moderationStatus = :status', { status: ModerationStatus.PENDING })
+      .orderBy('p.createdAt', 'DESC')
+      .skip(pagination.skip)
+      .take(pagination.limit);
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, meta: { total, page: pagination.page, limit: pagination.limit } };
+  }
+
+  /**
+   * Admin: Moderate a project (approve/reject)
+   */
+  async moderate(id: string, dto: ModerateProjectDto) {
+    const project = await this.projectRepo.findOne({ where: { id }, relations: ['user'] });
+    if (!project) throw new NotFoundException('Project not found');
+
+    const oldStatus = project.moderationStatus;
+    project.moderationStatus = dto.status;
+
+    const updated = await this.projectRepo.save(project);
+
+    this.logger.log(
+      `Project ${id} moderation status changed from ${oldStatus} to ${dto.status}. Notes: ${dto.notes || 'None'}`,
+    );
+
+    return updated;
   }
 }
