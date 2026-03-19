@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { GamificationService } from './gamification.service';
-import { User } from '@app/database/entities/user.entity';
-import { XpService } from './xp/xp.service';
-import { BadgesService } from './badges/badges.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { GamificationService } from "./gamification.service";
+import { User } from "@app/database/entities/user.entity";
+import { XpService } from "./xp/xp.service";
+import { BadgesService } from "./badges/badges.service";
 
-describe('GamificationService', () => {
+describe("GamificationService", () => {
   let service: GamificationService;
 
   const mockUserRepo = {
@@ -43,7 +43,7 @@ describe('GamificationService', () => {
     service = module.get<GamificationService>(GamificationService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

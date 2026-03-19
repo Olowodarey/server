@@ -1,6 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
-import { BuilderCategory } from '@app/database/entities/builder-profile.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+} from "class-validator";
+import { BuilderCategory } from "@app/database/entities/builder-profile.entity";
 
 export class SubmitBuilderDto {
   @ApiProperty()
@@ -8,7 +14,7 @@ export class SubmitBuilderDto {
   @MaxLength(100)
   name: string;
 
-  @ApiProperty({ example: '@yourhandle' })
+  @ApiProperty({ example: "@yourhandle" })
   @IsString()
   @MaxLength(100)
   handle: string;

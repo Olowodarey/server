@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import Anthropic from '@anthropic-ai/sdk';
-import { QuizSession } from '@app/database/entities/quiz-session.entity';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import Anthropic from "@anthropic-ai/sdk";
+import { QuizSession } from "@app/database/entities/quiz-session.entity";
 import {
   Question,
   QuestionType,
   MultipleChoiceQuestion,
   OpenEndedQuestion,
-} from '../types/question.types';
+} from "../types/question.types";
 
 export interface QuestionResult {
   questionId: string;
@@ -34,7 +34,7 @@ export class AiGraderService {
 
   constructor(private readonly config: ConfigService) {
     this.anthropic = new Anthropic({
-      apiKey: this.config.get('anthropic.apiKey'),
+      apiKey: this.config.get("anthropic.apiKey"),
     });
   }
 
@@ -49,7 +49,7 @@ export class AiGraderService {
     const results: QuestionResult[] = [];
 
     for (const question of questions) {
-      const userAnswer = answers[question.id] || '';
+      const userAnswer = answers[question.id] || "";
       const result = await this.gradeQuestion(question, userAnswer);
       results.push(result);
     }
@@ -122,7 +122,7 @@ export class AiGraderService {
         questionId: question.id,
         correct: false,
         userAnswer,
-        feedback: 'No answer provided.',
+        feedback: "No answer provided.",
       };
     }
 
@@ -130,9 +130,9 @@ export class AiGraderService {
 
     try {
       const response = await this.anthropic.messages.create({
-        model: this.config.get('anthropic.model'),
+        model: this.config.get("anthropic.model"),
         max_tokens: 1024,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [{ role: "user", content: prompt }],
       });
 
       const rawText = (response.content[0] as Anthropic.TextBlock).text;
@@ -145,12 +145,12 @@ export class AiGraderService {
         feedback: gradingResult.feedback,
       };
     } catch (error) {
-      this.logger.error('Failed to grade open-ended question', error);
+      this.logger.error("Failed to grade open-ended question", error);
       return {
         questionId: question.id,
         correct: false,
         userAnswer,
-        feedback: 'Grading failed. Please try again.',
+        feedback: "Grading failed. Please try again.",
       };
     }
   }
@@ -167,7 +167,7 @@ export class AiGraderService {
 Grade the following student answer:
 
 QUESTION: ${question.question}
-${question.codeSnippet ? `\nCODE CONTEXT:\n${question.codeSnippet}` : ''}
+${question.codeSnippet ? `\nCODE CONTEXT:\n${question.codeSnippet}` : ""}
 
 MODEL ANSWER: ${question.modelAnswer}
 
@@ -196,21 +196,23 @@ Do not include markdown code blocks or any other text.`;
     feedback: string;
   } {
     let cleanedText = rawText.trim();
-    if (cleanedText.startsWith('```')) {
-      cleanedText = cleanedText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    if (cleanedText.startsWith("```")) {
+      cleanedText = cleanedText
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "");
     }
 
     try {
       const parsed = JSON.parse(cleanedText);
       return {
         correct: parsed.correct === true,
-        feedback: parsed.feedback || 'No feedback provided.',
+        feedback: parsed.feedback || "No feedback provided.",
       };
     } catch (error) {
-      this.logger.error('Failed to parse grading result', error);
+      this.logger.error("Failed to parse grading result", error);
       return {
         correct: false,
-        feedback: 'Unable to grade this answer. Please try again.',
+        feedback: "Unable to grade this answer. Please try again.",
       };
     }
   }

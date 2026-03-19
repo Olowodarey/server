@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Certificate } from '@app/database/entities/certificate.entity';
-import { StacksNftService } from './stacks/stacks-nft.service';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Certificate } from "@app/database/entities/certificate.entity";
+import { StacksNftService } from "./stacks/stacks-nft.service";
 
 @Injectable()
 export class CertificatesService {
@@ -30,7 +30,7 @@ export class CertificatesService {
       await this.certRepo.save(cert);
     } catch (e) {
       // Log but don't fail — the certificate record exists, minting can be retried
-      console.error('NFT minting failed:', e.message);
+      console.error("NFT minting failed:", e.message);
     }
 
     return cert;
@@ -39,7 +39,7 @@ export class CertificatesService {
   async getUserCerts(userId: string) {
     return this.certRepo.find({
       where: { userId },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
   }
 

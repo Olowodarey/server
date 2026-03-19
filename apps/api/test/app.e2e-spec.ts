@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('AppController (e2e)', () => {
+describe("AppController (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -12,7 +12,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    
+
     // Apply same pipes as main.ts
     app.useGlobalPipes(
       new ValidationPipe({
@@ -22,9 +22,9 @@ describe('AppController (e2e)', () => {
         transformOptions: { enableImplicitConversion: true },
       }),
     );
-    
-    app.setGlobalPrefix('api/v1');
-    
+
+    app.setGlobalPrefix("api/v1");
+
     await app.init();
   });
 
@@ -32,15 +32,11 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET) - should return 404 for root', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(404);
+  it("/ (GET) - should return 404 for root", () => {
+    return request(app.getHttpServer()).get("/").expect(404);
   });
 
-  it('/api/v1/courses (GET) - should return courses list', () => {
-    return request(app.getHttpServer())
-      .get('/api/v1/courses')
-      .expect(200);
+  it("/api/v1/courses (GET) - should return courses list", () => {
+    return request(app.getHttpServer()).get("/api/v1/courses").expect(200);
   });
 });

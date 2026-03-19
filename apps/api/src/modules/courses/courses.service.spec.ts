@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserProgress } from '@app/database/entities/user-progress.entity';
-import { CoursesService } from './courses.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { UserProgress } from "@app/database/entities/user-progress.entity";
+import { CoursesService } from "./courses.service";
 
-describe('CoursesService', () => {
+describe("CoursesService", () => {
   let service: CoursesService;
 
   const mockProgressRepository = {
@@ -27,7 +27,7 @@ describe('CoursesService', () => {
     service = module.get<CoursesService>(CoursesService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import * as request from 'supertest';
-import { Repository, DataSource } from 'typeorm';
-import { AppModule } from '../src/app.module';
-import { User } from '@app/database/entities/user.entity';
-import { AuthService } from '../src/modules/auth/auth.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import * as request from "supertest";
+import { Repository, DataSource } from "typeorm";
+import { AppModule } from "../src/app.module";
+import { User } from "@app/database/entities/user.entity";
+import { AuthService } from "../src/modules/auth/auth.service";
 
-describe('Gamification (e2e)', () => {
+describe("Gamification (e2e)", () => {
   let app: INestApplication;
   let authToken: string;
   let userRepo: Repository<User>;
@@ -27,7 +27,7 @@ describe('Gamification (e2e)', () => {
         transformOptions: { enableImplicitConversion: true },
       }),
     );
-    app.setGlobalPrefix('api/v1');
+    app.setGlobalPrefix("api/v1");
     await app.init();
 
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
@@ -36,7 +36,7 @@ describe('Gamification (e2e)', () => {
     const randomWallet = `SP${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
     testUser = userRepo.create({
       walletAddress: randomWallet,
-      displayName: 'Gamification Test User',
+      displayName: "Gamification Test User",
     });
     testUser = await userRepo.save(testUser);
 
@@ -47,35 +47,39 @@ describe('Gamification (e2e)', () => {
   afterAll(async () => {
     if (testUser && testUser.id) {
       const dataSource = app.get(DataSource);
-      await dataSource.query('DELETE FROM xp_events WHERE user_id = $1', [testUser.id]);
-      await dataSource.query('DELETE FROM user_badges WHERE user_id = $1', [testUser.id]);
-      await dataSource.query('DELETE FROM users WHERE id = $1', [testUser.id]);
+      await dataSource.query("DELETE FROM xp_events WHERE user_id = $1", [
+        testUser.id,
+      ]);
+      await dataSource.query("DELETE FROM user_badges WHERE user_id = $1", [
+        testUser.id,
+      ]);
+      await dataSource.query("DELETE FROM users WHERE id = $1", [testUser.id]);
     }
     await app.close();
   });
 
-  describe('/api/v1/gamification/leaderboard (GET)', () => {
-    it('should return leaderboard (public)', () => {
+  describe("/api/v1/gamification/leaderboard (GET)", () => {
+    it("should return leaderboard (public)", () => {
       return request(app.getHttpServer())
-        .get('/api/v1/gamification/leaderboard?page=1&limit=10')
+        .get("/api/v1/gamification/leaderboard?page=1&limit=10")
         .expect(200)
         .expect((res) => {
-          expect(res.body).toHaveProperty('data');
+          expect(res.body).toHaveProperty("data");
           expect(Array.isArray(res.body.data)).toBe(true);
         });
     });
 
-    it('should accept pagination parameters', () => {
+    it("should accept pagination parameters", () => {
       return request(app.getHttpServer())
-        .get('/api/v1/gamification/leaderboard?page=2&limit=5')
+        .get("/api/v1/gamification/leaderboard?page=2&limit=5")
         .expect(200);
     });
   });
 
-  describe('/api/v1/gamification/badges (GET)', () => {
-    it('should return all badges (public)', () => {
+  describe("/api/v1/gamification/badges (GET)", () => {
+    it("should return all badges (public)", () => {
       return request(app.getHttpServer())
-        .get('/api/v1/gamification/badges')
+        .get("/api/v1/gamification/badges")
         .expect(200);
     });
   });

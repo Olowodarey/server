@@ -1,17 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProgress, StepState } from '@app/database/entities/user-progress.entity';
-import { User } from '@app/database/entities/user.entity';
-import { ChatSession } from '@app/database/entities/chat-session.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import {
+  UserProgress,
+  StepState,
+} from "@app/database/entities/user-progress.entity";
+import { User } from "@app/database/entities/user.entity";
+import { ChatSession } from "@app/database/entities/chat-session.entity";
 
 const MODULE_NAMES: Record<number, string> = {
-  1: 'Bitcoin Fundamentals',
-  2: 'Introduction to Stacks',
-  3: 'Clarity Smart Contracts',
-  4: 'Build dApps',
-  5: 'Advanced Smart Contract Patterns',
-  6: 'Build Real Projects',
+  1: "Bitcoin Fundamentals",
+  2: "Introduction to Stacks",
+  3: "Clarity Smart Contracts",
+  4: "Build dApps",
+  5: "Advanced Smart Contract Patterns",
+  6: "Build Real Projects",
   // 7: 'General'
 };
 
@@ -28,8 +31,8 @@ export class PromptBuilderService {
     });
 
     const currentModule = session.currentCourseId
-      ? `Module ${session.currentCourseId}: ${MODULE_NAMES[session.currentCourseId] ?? 'Unknown'}`
-      : 'Introduction';
+      ? `Module ${session.currentCourseId}: ${MODULE_NAMES[session.currentCourseId] ?? "Unknown"}`
+      : "Introduction";
 
     return `You are an expert Stacks and Bitcoin L2 mentor on the Stacks Academy platform.
 

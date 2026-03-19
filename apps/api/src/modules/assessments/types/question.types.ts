@@ -3,8 +3,8 @@
  */
 
 export enum QuestionType {
-  MULTIPLE_CHOICE = 'multiple-choice',
-  OPEN_ENDED = 'open-ended',
+  MULTIPLE_CHOICE = "multiple-choice",
+  OPEN_ENDED = "open-ended",
 }
 
 export interface BaseQuestion {

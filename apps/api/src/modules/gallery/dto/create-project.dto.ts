@@ -1,6 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
-import { ProjectCategory } from '@app/database/entities/gallery-project.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+} from "class-validator";
+import { ProjectCategory } from "@app/database/entities/gallery-project.entity";
 
 export class CreateProjectDto {
   @ApiProperty()

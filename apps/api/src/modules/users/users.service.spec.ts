@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { User } from '@app/database/entities/user.entity';
-import { createMockRepository } from '../../../test/mocks/repository.mock';
-import { UserFactory } from '../../../test/factories/user.factory';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { NotFoundException } from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { User } from "@app/database/entities/user.entity";
+import { createMockRepository } from "../../../test/mocks/repository.mock";
+import { UserFactory } from "../../../test/factories/user.factory";
 
-describe('UsersService', () => {
+describe("UsersService", () => {
   let service: UsersService;
   let userRepo: jest.Mocked<Repository<User>>;
 
@@ -30,8 +30,8 @@ describe('UsersService', () => {
     jest.clearAllMocks();
   });
 
-  describe('findById', () => {
-    it('should return a user by id', async () => {
+  describe("findById", () => {
+    it("should return a user by id", async () => {
       const mockUser = UserFactory.create();
       userRepo.findOne.mockResolvedValue(mockUser);
 
@@ -43,20 +43,20 @@ describe('UsersService', () => {
       });
     });
 
-    it('should throw NotFoundException if user not found', async () => {
+    it("should throw NotFoundException if user not found", async () => {
       userRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.findById('non-existent')).rejects.toThrow(
+      await expect(service.findById("non-existent")).rejects.toThrow(
         NotFoundException,
       );
-      await expect(service.findById('non-existent')).rejects.toThrow(
-        'User non-existent not found',
+      await expect(service.findById("non-existent")).rejects.toThrow(
+        "User non-existent not found",
       );
     });
   });
 
-  describe('findByWalletAddress', () => {
-    it('should return a user by wallet address', async () => {
+  describe("findByWalletAddress", () => {
+    it("should return a user by wallet address", async () => {
       const mockUser = UserFactory.create();
       userRepo.findOne.mockResolvedValue(mockUser);
 
@@ -68,21 +68,21 @@ describe('UsersService', () => {
       });
     });
 
-    it('should return null if user not found', async () => {
+    it("should return null if user not found", async () => {
       userRepo.findOne.mockResolvedValue(null);
 
-      const result = await service.findByWalletAddress('SP123');
+      const result = await service.findByWalletAddress("SP123");
 
       expect(result).toBeNull();
     });
   });
 
-  describe('updateProfile', () => {
-    it('should update user profile', async () => {
+  describe("updateProfile", () => {
+    it("should update user profile", async () => {
       const mockUser = UserFactory.create();
       const updateDto = {
-        displayName: 'Updated Name',
-        bio: 'New bio',
+        displayName: "Updated Name",
+        bio: "New bio",
       };
 
       userRepo.findOne.mockResolvedValue(mockUser);
@@ -95,17 +95,17 @@ describe('UsersService', () => {
       expect(userRepo.save).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException if user not found', async () => {
+    it("should throw NotFoundException if user not found", async () => {
       userRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.updateProfile('non-existent', { displayName: 'Test' }),
+        service.updateProfile("non-existent", { displayName: "Test" }),
       ).rejects.toThrow(NotFoundException);
     });
   });
 
-  describe('getStats', () => {
-    it('should return user stats', async () => {
+  describe("getStats", () => {
+    it("should return user stats", async () => {
       const mockUser = UserFactory.create({
         xpTotal: 500,
         level: 5,

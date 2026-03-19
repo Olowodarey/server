@@ -5,8 +5,8 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -25,12 +25,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.getResponse()
-        : 'Internal server error';
+        : "Internal server error";
 
     const errorMessage =
-      typeof message === 'string'
+      typeof message === "string"
         ? message
-        : (message as any)?.message || 'An error occurred';
+        : (message as any)?.message || "An error occurred";
 
     this.logger.error(
       `${request.method} ${request.url} → ${status}: ${errorMessage}`,

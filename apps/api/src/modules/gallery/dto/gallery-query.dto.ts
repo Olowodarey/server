@@ -1,17 +1,25 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ProjectCategory } from '@app/database/entities/gallery-project.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
+import { Type } from "class-transformer";
+import { ProjectCategory } from "@app/database/entities/gallery-project.entity";
 
 export class GalleryQueryDto {
-  @ApiProperty({ default: 1, description: 'Page number (1-indexed)', required: false })
+  @ApiProperty({
+    default: 1,
+    description: "Page number (1-indexed)",
+    required: false,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
   page?: number = 1;
 
-  @ApiProperty({ default: 20, description: 'Items per page (max 100)', required: false })
+  @ApiProperty({
+    default: 20,
+    description: "Items per page (max 100)",
+    required: false,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

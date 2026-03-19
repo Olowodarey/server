@@ -2,7 +2,7 @@
 // This file runs before all tests
 
 // Set test environment
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = "test";
 
 // Increase timeout for E2E tests
 jest.setTimeout(30000);

@@ -3,5 +3,5 @@
 
 export default async () => {
   // Add any global cleanup here
-  console.log('Test suite completed');
+  console.log("Test suite completed");
 };

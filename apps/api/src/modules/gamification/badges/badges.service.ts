@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Badge } from '@app/database/entities/badge.entity';
-import { UserBadge } from '@app/database/entities/user-badge.entity';
-import { User } from '@app/database/entities/user.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Badge } from "@app/database/entities/badge.entity";
+import { UserBadge } from "@app/database/entities/user-badge.entity";
+import { User } from "@app/database/entities/user.entity";
 
 @Injectable()
 export class BadgesService {
@@ -17,14 +17,14 @@ export class BadgesService {
   ) {}
 
   async getAll() {
-    return this.badgeRepo.find({ order: { id: 'ASC' } });
+    return this.badgeRepo.find({ order: { id: "ASC" } });
   }
 
   async getUserBadges(userId: string) {
     return this.userBadgeRepo.find({
       where: { userId },
-      relations: ['badge'],
-      order: { earnedAt: 'DESC' },
+      relations: ["badge"],
+      order: { earnedAt: "DESC" },
     });
   }
 

@@ -1,23 +1,29 @@
-import { CreateDateColumn, Entity, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
-import { User } from './user.entity';
-import { GalleryProject } from './gallery-project.entity';
+import {
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  PrimaryColumn,
+} from "typeorm";
+import { User } from "./user.entity";
+import { GalleryProject } from "./gallery-project.entity";
 
-@Entity('project_votes')
+@Entity("project_votes")
 export class ProjectVote {
-  @PrimaryColumn({ name: 'user_id' })
+  @PrimaryColumn({ name: "user_id" })
   userId: string;
 
-  @PrimaryColumn({ name: 'project_id' })
+  @PrimaryColumn({ name: "project_id" })
   projectId: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: "user_id" })
   user: User;
 
   @ManyToOne(() => GalleryProject, (p) => p.votes)
-  @JoinColumn({ name: 'project_id' })
+  @JoinColumn({ name: "project_id" })
   project: GalleryProject;
 }

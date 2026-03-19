@@ -1,16 +1,16 @@
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
-import { BaseEntity } from './base.entity';
-import { User } from './user.entity';
+import { Column, Entity, ManyToOne, JoinColumn } from "typeorm";
+import { BaseEntity } from "./base.entity";
+import { User } from "./user.entity";
 
 export enum BuilderCategory {
-  ECOSYSTEM = 'Ecosystem',
-  DEFI = 'DeFi',
-  NFTS = 'NFTs',
-  TOOLING = 'Tooling',
-  EDUCATION = 'Education',
+  ECOSYSTEM = "Ecosystem",
+  DEFI = "DeFi",
+  NFTS = "NFTs",
+  TOOLING = "Tooling",
+  EDUCATION = "Education",
 }
 
-@Entity('builder_profiles')
+@Entity("builder_profiles")
 export class BuilderProfile extends BaseEntity {
   @Column({ length: 100 })
   name: string;
@@ -21,34 +21,38 @@ export class BuilderProfile extends BaseEntity {
   @Column({ length: 200 })
   role: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: "text" })
   description: string;
 
-  @Column({ name: 'twitter_url', nullable: true })
+  @Column({ name: "twitter_url", nullable: true })
   twitterUrl: string;
 
-  @Column({ name: 'website_url', nullable: true })
+  @Column({ name: "website_url", nullable: true })
   websiteUrl: string;
 
-  @Column({ type: 'enum', enum: BuilderCategory })
+  @Column({ type: "enum", enum: BuilderCategory })
   category: BuilderCategory;
 
   @Column({ nullable: true, length: 50 })
   followers: string;
 
-  @Column({ name: 'avatar_gradient', length: 100, default: 'from-blue-500 to-purple-600' })
+  @Column({
+    name: "avatar_gradient",
+    length: 100,
+    default: "from-blue-500 to-purple-600",
+  })
   avatarGradient: string;
 
-  @Column({ length: 10, default: 'SA' })
+  @Column({ length: 10, default: "SA" })
   initials: string;
 
-  @Column({ name: 'is_approved', default: false })
+  @Column({ name: "is_approved", default: false })
   isApproved: boolean;
 
-  @Column({ name: 'submitted_by', nullable: true })
+  @Column({ name: "submitted_by", nullable: true })
   submittedBy: string;
 
   @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'submitted_by' })
+  @JoinColumn({ name: "submitted_by" })
   submitter: User;
 }

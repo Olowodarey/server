@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { QuizFormatDto } from '../dto/generate-quiz.dto';
+import { Injectable } from "@nestjs/common";
+import { QuizFormatDto } from "../dto/generate-quiz.dto";
 
 /**
  * Service responsible for building AI prompts for quiz generation
@@ -16,7 +16,8 @@ export class PromptBuilderService {
   ): string {
     const basePrompt = this.getBasePrompt(topic);
     const formatInstructions = this.getFormatInstructions(format);
-    const difficultyInstructions = this.getDifficultyInstructions(includeAdvanced);
+    const difficultyInstructions =
+      this.getDifficultyInstructions(includeAdvanced);
     const jsonSchema = this.getJsonSchema(format);
 
     return `${basePrompt}
@@ -113,7 +114,7 @@ Each question should:
   "explanation": "Detailed explanation and key points to look for"
 }`;
 
-    let schemaText = 'JSON SCHEMA:\n';
+    let schemaText = "JSON SCHEMA:\n";
 
     if (format === QuizFormatDto.MULTI_CHOICE) {
       schemaText += `Return an array of questions following this schema:\n${multipleChoiceSchema}`;

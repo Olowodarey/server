@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProgress, StepState } from '@app/database/entities/user-progress.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import {
+  UserProgress,
+  StepState,
+} from "@app/database/entities/user-progress.entity";
 
 /**
  * Course curriculum is defined statically here (or loaded from a seed/config).
@@ -11,34 +14,87 @@ import { UserProgress, StepState } from '@app/database/entities/user-progress.en
 const CURRICULUM = [
   {
     id: 1,
-    title: 'Bitcoin Fundamentals',
-    description: 'Understand the core principles of Bitcoin.',
+    title: "Bitcoin Fundamentals",
+    description: "Understand the core principles of Bitcoin.",
     lessons: [
-      { id: 1, title: 'Bitcoin 101', steps: [{ id: 1, title: 'What is Bitcoin?' }, { id: 2, title: 'History' }] },
-      { id: 2, title: 'The Bitcoin Network', steps: [{ id: 1, title: 'Nodes' }, { id: 2, title: 'Miners' }] },
-      { id: 3, title: 'Proof of Work', steps: [{ id: 1, title: 'PoW Explained' }] },
-      { id: 4, title: 'Wallets & Nodes', steps: [{ id: 1, title: 'Key Management' }] },
+      {
+        id: 1,
+        title: "Bitcoin 101",
+        steps: [
+          { id: 1, title: "What is Bitcoin?" },
+          { id: 2, title: "History" },
+        ],
+      },
+      {
+        id: 2,
+        title: "The Bitcoin Network",
+        steps: [
+          { id: 1, title: "Nodes" },
+          { id: 2, title: "Miners" },
+        ],
+      },
+      {
+        id: 3,
+        title: "Proof of Work",
+        steps: [{ id: 1, title: "PoW Explained" }],
+      },
+      {
+        id: 4,
+        title: "Wallets & Nodes",
+        steps: [{ id: 1, title: "Key Management" }],
+      },
     ],
   },
   {
     id: 2,
-    title: 'Introduction to Stacks',
-    description: 'Explore the Stacks L2 ecosystem.',
+    title: "Introduction to Stacks",
+    description: "Explore the Stacks L2 ecosystem.",
     lessons: [
-      { id: 1, title: 'Basics of Stacks', steps: [{ id: 1, title: 'What is Stacks?' }] },
-      { id: 2, title: 'Proof of Transfer (PoX)', steps: [{ id: 1, title: 'PoX Mechanics' }] },
-      { id: 3, title: 'sBTC Overview', steps: [{ id: 1, title: 'sBTC Bridge' }] },
-      { id: 4, title: 'Stacks Architecture', steps: [{ id: 1, title: 'Microblocks' }] },
+      {
+        id: 1,
+        title: "Basics of Stacks",
+        steps: [{ id: 1, title: "What is Stacks?" }],
+      },
+      {
+        id: 2,
+        title: "Proof of Transfer (PoX)",
+        steps: [{ id: 1, title: "PoX Mechanics" }],
+      },
+      {
+        id: 3,
+        title: "sBTC Overview",
+        steps: [{ id: 1, title: "sBTC Bridge" }],
+      },
+      {
+        id: 4,
+        title: "Stacks Architecture",
+        steps: [{ id: 1, title: "Microblocks" }],
+      },
     ],
   },
   {
     id: 3,
-    title: 'Clarity Smart Contracts',
-    description: 'Write smart contracts using the Clarity language.',
+    title: "Clarity Smart Contracts",
+    description: "Write smart contracts using the Clarity language.",
     lessons: [
-      { id: 1, title: 'Clarity Syntax', steps: [{ id: 1, title: 'Types' }, { id: 2, title: 'Functions' }] },
-      { id: 2, title: 'Built-in Functions', steps: [{ id: 1, title: 'STX Functions' }] },
-      { id: 3, title: 'Deploying Contracts', steps: [{ id: 1, title: 'testnet deploy' }] },
+      {
+        id: 1,
+        title: "Clarity Syntax",
+        steps: [
+          { id: 1, title: "Types" },
+          { id: 2, title: "Functions" },
+        ],
+      },
+      {
+        id: 2,
+        title: "Built-in Functions",
+        steps: [{ id: 1, title: "STX Functions" }],
+      },
+      {
+        id: 3,
+        title: "Deploying Contracts",
+        steps: [{ id: 1, title: "testnet deploy" }],
+      },
     ],
   },
   // {
@@ -51,12 +107,26 @@ const CURRICULUM = [
   //   ],
   // },
   {
-    id: 4, title: 'Advanced Smart Contract Patterns', description: 'Master advanced Clarity concepts.',
+    id: 4,
+    title: "Advanced Smart Contract Patterns",
+    description: "Master advanced Clarity concepts.",
     lessons: [
-      { id: 1, title: 'Advanced Methods', steps: [{ id: 1, title: 'Traits' }] },
-      { id: 2, title: 'Security Best Practices', steps: [{ id: 1, title: 'Audits' }] },
-      { id: 3, title: 'DeFi Implementations', steps: [{ id: 1, title: 'AMMs' }] },
-      { id: 4, title: 'Performance Profiling', steps: [{ id: 1, title: 'Gas' }] },
+      { id: 1, title: "Advanced Methods", steps: [{ id: 1, title: "Traits" }] },
+      {
+        id: 2,
+        title: "Security Best Practices",
+        steps: [{ id: 1, title: "Audits" }],
+      },
+      {
+        id: 3,
+        title: "DeFi Implementations",
+        steps: [{ id: 1, title: "AMMs" }],
+      },
+      {
+        id: 4,
+        title: "Performance Profiling",
+        steps: [{ id: 1, title: "Gas" }],
+      },
     ],
   },
   {
@@ -103,19 +173,29 @@ export class CoursesService {
       }),
     }));
 
-    const totalSteps = course.lessons.reduce((acc, l) => acc + l.steps.length, 0);
-    const completedSteps = progressRecords.filter((p) => p.state === StepState.COMPLETED)
-      .length;
+    const totalSteps = course.lessons.reduce(
+      (acc, l) => acc + l.steps.length,
+      0,
+    );
+    const completedSteps = progressRecords.filter(
+      (p) => p.state === StepState.COMPLETED,
+    ).length;
 
     return {
       lessons,
       totalSteps,
       completedSteps,
-      progressPercentage: totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0,
+      progressPercentage:
+        totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0,
     };
   }
 
-  async completeStep(userId: string, courseId: number, lessonId: number, stepId: number) {
+  async completeStep(
+    userId: string,
+    courseId: number,
+    lessonId: number,
+    stepId: number,
+  ) {
     let record = await this.progressRepo.findOne({
       where: { userId, courseId, lessonId, stepId },
     });

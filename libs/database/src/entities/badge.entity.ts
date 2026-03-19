@@ -1,9 +1,9 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserBadge } from './user-badge.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { UserBadge } from "./user-badge.entity";
 
-@Entity('badges')
+@Entity("badges")
 export class Badge {
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn("increment")
   id: number;
 
   @Column({ unique: true, length: 100 })
@@ -12,16 +12,16 @@ export class Badge {
   @Column({ length: 100 })
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: "text" })
   description: string;
 
-  @Column({ name: 'image_url' })
+  @Column({ name: "image_url" })
   imageUrl: string;
 
-  @Column({ name: 'xp_reward', default: 0 })
+  @Column({ name: "xp_reward", default: 0 })
   xpReward: number;
 
-  @Column({ name: 'trigger_condition', length: 255 })
+  @Column({ name: "trigger_condition", length: 255 })
   triggerCondition: string;
 
   @OneToMany(() => UserBadge, (ub) => ub.badge)

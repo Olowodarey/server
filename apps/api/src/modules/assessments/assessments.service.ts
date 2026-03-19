@@ -3,20 +3,20 @@ import {
   ForbiddenException,
   NotFoundException,
   Logger,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 import {
   QuizSession,
   QuizFormat,
-} from '@app/database/entities/quiz-session.entity';
-import { User } from '@app/database/entities/user.entity';
-import { GenerateQuizDto } from './dto/generate-quiz.dto';
-import { AiGraderService } from './grader/ai-grader.service';
-import { SubmitAnswersDto } from './dto/submit-answers.dto';
-import { QuizGeneratorService } from './generators/quiz-generator.service';
-import { XpService, XP_REWARDS } from '../gamification/xp/xp.service';
+} from "@app/database/entities/quiz-session.entity";
+import { User } from "@app/database/entities/user.entity";
+import { GenerateQuizDto } from "./dto/generate-quiz.dto";
+import { AiGraderService } from "./grader/ai-grader.service";
+import { SubmitAnswersDto } from "./dto/submit-answers.dto";
+import { QuizGeneratorService } from "./generators/quiz-generator.service";
+import { XpService, XP_REWARDS } from "../gamification/xp/xp.service";
 
 @Injectable()
 export class AssessmentsService {
@@ -70,11 +70,11 @@ export class AssessmentsService {
     });
 
     if (!session) {
-      throw new NotFoundException('Quiz session not found');
+      throw new NotFoundException("Quiz session not found");
     }
 
     if (session.gradedAt) {
-      throw new ForbiddenException('Quiz has already been graded');
+      throw new ForbiddenException("Quiz has already been graded");
     }
 
     this.logger.log(`Grading quiz ${sessionId} for user ${user.id}`);
@@ -108,7 +108,7 @@ export class AssessmentsService {
   async getHistory(userId: string) {
     return this.quizRepo.find({
       where: { userId },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
       take: 20,
     });
   }

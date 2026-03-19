@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '@app/database/entities/user.entity';
-import { XpEvent } from '@app/database/entities/xp-event.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "@app/database/entities/user.entity";
+import { XpEvent } from "@app/database/entities/xp-event.entity";
 
 export const XP_REWARDS = {
   LESSON_STEP_COMPLETE: 50,
@@ -15,16 +15,16 @@ export const XP_REWARDS = {
 } as const;
 
 export const LEVEL_THRESHOLDS = [
-  { level: 1, title: 'Stacker Novice', xp: 0 },
-  { level: 2, title: 'Clarity Coder', xp: 500 },
-  { level: 3, title: 'Bitcoin Builder', xp: 1500 },
-  { level: 4, title: 'L2 Architect', xp: 3500 },
-  { level: 5, title: 'Smart Contract Developer', xp: 6500 },
-  { level: 6, title: 'DeFi Engineer', xp: 10500 },
-  { level: 7, title: 'Protocol Expert', xp: 15500 },
-  { level: 8, title: 'Blockchain Architect', xp: 22000 },
-  { level: 9, title: 'Stacks Master', xp: 30000 },
-  { level: 10, title: 'Bitcoin L2 Legend', xp: 40000 },
+  { level: 1, title: "Stacker Novice", xp: 0 },
+  { level: 2, title: "Clarity Coder", xp: 500 },
+  { level: 3, title: "Bitcoin Builder", xp: 1500 },
+  { level: 4, title: "L2 Architect", xp: 3500 },
+  { level: 5, title: "Smart Contract Developer", xp: 6500 },
+  { level: 6, title: "DeFi Engineer", xp: 10500 },
+  { level: 7, title: "Protocol Expert", xp: 15500 },
+  { level: 8, title: "Blockchain Architect", xp: 22000 },
+  { level: 9, title: "Stacks Master", xp: 30000 },
+  { level: 10, title: "Bitcoin L2 Legend", xp: 40000 },
 ];
 
 @Injectable()
@@ -36,9 +36,19 @@ export class XpService {
     private readonly xpEventRepo: Repository<XpEvent>,
   ) {}
 
-  async award(userId: string, amount: number, reason: string, referenceId?: string) {
+  async award(
+    userId: string,
+    amount: number,
+    reason: string,
+    referenceId?: string,
+  ) {
     // Record XP event
-    const event = this.xpEventRepo.create({ userId, amount, reason, referenceId });
+    const event = this.xpEventRepo.create({
+      userId,
+      amount,
+      reason,
+      referenceId,
+    });
     await this.xpEventRepo.save(event);
 
     // Update user total and level
@@ -63,21 +73,19 @@ export class XpService {
   }
 
   private calculateLevel(xp: number): number {
-    return LEVEL_THRESHOLDS
-      .filter((t) => xp >= t.xp)
-      .at(-1)?.level ?? 1;
+    return LEVEL_THRESHOLDS.filter((t) => xp >= t.xp).at(-1)?.level ?? 1;
   }
 
   getLevelInfo(xp: number) {
     const current = LEVEL_THRESHOLDS.filter((t) => xp >= t.xp).at(-1);
     const next = LEVEL_THRESHOLDS.find((t) => t.xp > xp);
-    
+
     const currentLevelXp = current.xp;
     const nextLevelXp = next?.xp ?? current.xp;
-    const progress = next 
+    const progress = next
       ? (xp - currentLevelXp) / (nextLevelXp - currentLevelXp)
       : 1.0;
-    
+
     return {
       xpTotal: xp,
       level: current.level,
