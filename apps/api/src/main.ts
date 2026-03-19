@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { Logger } from 'nestjs-pino';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { ValidationPipe } from "@nestjs/common";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { Logger } from "nestjs-pino";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   // Global API prefix
-  const apiPrefix = process.env.API_PREFIX || 'api/v1';
+  const apiPrefix = process.env.API_PREFIX || "api/v1";
   app.setGlobalPrefix(apiPrefix);
 
   // Global validation pipe
@@ -25,33 +25,33 @@ async function bootstrap() {
   );
 
   // CORS
-  app.enableCors({ origin: '*' })
+  app.enableCors({ origin: "*" });
   // app.enableCors({
   //   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   //   credentials: true,
   // });
 
   // Swagger — only in non-production
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     const config = new DocumentBuilder()
-      .setTitle('Stacks Academy API')
+      .setTitle("Stacks Academy API")
       .setDescription(
-        'Production-grade backend for the Stacks Academy learning platform',
+        "Production-grade backend for the Stacks Academy learning platform",
       )
-      .setVersion('1.0')
+      .setVersion("1.0")
       .addBearerAuth(
-        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        'JWT',
+        { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+        "JWT",
       )
-      .addTag('auth', 'Stacks wallet authentication')
-      .addTag('users', 'User profiles and stats')
-      .addTag('courses', 'Learning path and progress')
-      .addTag('assessments', 'AI-generated quizzes and grading')
-      .addTag('ai-tutor', 'Context-aware Claude AI tutor')
-      .addTag('gamification', 'XP, levels, streaks, and leaderboard')
-      .addTag('certificates', 'SIP-009 NFT certificate minting')
-      .addTag('gallery', 'Builder project showcase')
-      .addTag('builders', 'Builders connect directory')
+      .addTag("auth", "Stacks wallet authentication")
+      .addTag("users", "User profiles and stats")
+      .addTag("courses", "Learning path and progress")
+      .addTag("assessments", "AI-generated quizzes and grading")
+      .addTag("ai-tutor", "Context-aware Claude AI tutor")
+      .addTag("gamification", "XP, levels, streaks, and leaderboard")
+      .addTag("certificates", "SIP-009 NFT certificate minting")
+      .addTag("gallery", "Builder project showcase")
+      .addTag("builders", "Builders connect directory")
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
@@ -63,7 +63,9 @@ async function bootstrap() {
   const port = process.env.PORT || 3001;
   await app.listen(port);
 
-  console.log(`🚀 Stacks Academy API running on: http://localhost:${port}/${apiPrefix}`);
+  console.log(
+    `🚀 Stacks Academy API running on: http://localhost:${port}/${apiPrefix}`,
+  );
   console.log(`📚 Swagger docs: http://localhost:${port}/${apiPrefix}/docs`);
 }
 
