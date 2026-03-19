@@ -8,12 +8,13 @@ export const appConfig = registerAs("app", () => ({
 }));
 
 export const databaseConfig = registerAs("database", () => ({
+  url: process.env.DATABASE_URL,
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT, 10) || 5432,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  ssl: process.env.DB_SSL === "true",
+  ssl: process.env.DB_SSL === "true" || !!process.env.DATABASE_URL,
 }));
 
 export const jwtConfig = registerAs("jwt", () => ({
