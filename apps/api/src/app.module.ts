@@ -62,8 +62,10 @@ import { HealthModule } from "./modules/health/health.module";
     // Global response envelope: { success, data, meta }
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
 
-    // Global request/response logging
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    // Global request/response logging (disabled in production)
+    ...(process.env.NODE_ENV !== "production"
+      ? [{ provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }]
+      : []),
   ],
 })
 export class AppModule { }
