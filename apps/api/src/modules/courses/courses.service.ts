@@ -41,17 +41,17 @@ const CURRICULUM = [
       { id: 3, title: 'Deploying Contracts', steps: [{ id: 1, title: 'testnet deploy' }] },
     ],
   },
+  // {
+  //   id: 4, title: 'Build dApps', description: 'Build complete Stacks dApps.',
+  //   lessons: [
+  //     { id: 1, title: 'Stacks JS Basics', steps: [{ id: 1, title: 'Setup' }] },
+  //     { id: 2, title: 'Wallet Authentication', steps: [{ id: 1, title: 'Connect' }] },
+  //     { id: 3, title: 'Connecting Contracts', steps: [{ id: 1, title: 'Calls' }] },
+  //     { id: 4, title: 'Real-world Project', steps: [{ id: 1, title: 'Build' }] },
+  //   ],
+  // },
   {
-    id: 4, title: 'Build dApps', description: 'Build complete Stacks dApps.',
-    lessons: [
-      { id: 1, title: 'Stacks JS Basics', steps: [{ id: 1, title: 'Setup' }] },
-      { id: 2, title: 'Wallet Authentication', steps: [{ id: 1, title: 'Connect' }] },
-      { id: 3, title: 'Connecting Contracts', steps: [{ id: 1, title: 'Calls' }] },
-      { id: 4, title: 'Real-world Project', steps: [{ id: 1, title: 'Build' }] },
-    ],
-  },
-  {
-    id: 5, title: 'Advanced Smart Contract Patterns', description: 'Master advanced Clarity concepts.',
+    id: 4, title: 'Advanced Smart Contract Patterns', description: 'Master advanced Clarity concepts.',
     lessons: [
       { id: 1, title: 'Advanced Methods', steps: [{ id: 1, title: 'Traits' }] },
       { id: 2, title: 'Security Best Practices', steps: [{ id: 1, title: 'Audits' }] },
@@ -60,13 +60,13 @@ const CURRICULUM = [
     ],
   },
   {
-    id: 6, title: 'Build Real Projects', description: 'Deploy full-scale ecosystem projects.',
-    lessons: [
-      { id: 1, title: 'Project Proposal', steps: [{ id: 1, title: 'Scope' }] },
-      { id: 2, title: 'DApp Architecture', steps: [{ id: 1, title: 'Design' }] },
-      { id: 3, title: 'Final Polish', steps: [{ id: 1, title: 'UX' }] },
-      { id: 4, title: 'Mainnet Deployment', steps: [{ id: 1, title: 'Launch' }] },
-    ],
+    // id: 6, title: 'Build Real Projects', description: 'Deploy full-scale ecosystem projects.',
+    // lessons: [
+    //   { id: 1, title: 'Project Proposal', steps: [{ id: 1, title: 'Scope' }] },
+    //   { id: 2, title: 'DApp Architecture', steps: [{ id: 1, title: 'Design' }] },
+    //   { id: 3, title: 'Final Polish', steps: [{ id: 1, title: 'UX' }] },
+    //   { id: 4, title: 'Mainnet Deployment', steps: [{ id: 1, title: 'Launch' }] },
+    // ],
   },
 ];
 
