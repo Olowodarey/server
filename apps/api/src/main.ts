@@ -11,14 +11,16 @@ async function bootstrap() {
   // Use Pino structured logger
   app.useLogger(app.get(Logger));
 
-  // Run pending migrations on startup
-  try {
-    const dataSource = app.get(getDataSourceToken());
-    await dataSource.runMigrations();
-    console.log("✅ Database migrations applied");
-  } catch (err) {
-    console.error("❌ Migration failed:", err);
-    process.exit(1);
+  // Run pending migrations on startup (skip in test environment)
+  if (process.env.NODE_ENV !== "test") {
+    try {
+      const dataSource = app.get(getDataSourceToken());
+      await dataSource.runMigrations();
+      console.log("✅ Database migrations applied");
+    } catch (err) {
+      console.error("❌ Migration failed:", err);
+      process.exit(1);
+    }
   }
 
   // Global API prefix
