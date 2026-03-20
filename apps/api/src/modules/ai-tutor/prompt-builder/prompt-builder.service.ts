@@ -12,10 +12,8 @@ const MODULE_NAMES: Record<number, string> = {
   1: "Bitcoin Fundamentals",
   2: "Introduction to Stacks",
   3: "Clarity Smart Contracts",
-  4: "Build dApps",
-  5: "Advanced Smart Contract Patterns",
-  6: "Build Real Projects",
-  // 7: 'General'
+  4: "Advanced Smart Contract Patterns",
+  // 5: 'General'
 };
 
 @Injectable()
@@ -23,7 +21,7 @@ export class PromptBuilderService {
   constructor(
     @InjectRepository(UserProgress)
     private readonly progressRepo: Repository<UserProgress>,
-  ) {}
+  ) { }
 
   async build(user: User, session: ChatSession): Promise<string> {
     const completedSteps = await this.progressRepo.count({
