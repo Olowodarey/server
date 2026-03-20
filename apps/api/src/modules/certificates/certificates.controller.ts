@@ -10,7 +10,7 @@ import { MintCertificateDto } from "./dto/mint-certificate.dto";
 @ApiBearerAuth("JWT")
 @Controller("certificates")
 export class CertificatesController {
-  constructor(private readonly certificatesService: CertificatesService) {}
+  constructor(private readonly certificatesService: CertificatesService) { }
 
   @Post("mint")
   @ApiOperation({
@@ -18,6 +18,15 @@ export class CertificatesController {
   })
   mint(@CurrentUser() user: User, @Body() dto: MintCertificateDto) {
     return this.certificatesService.mint(user.id, dto.moduleId, dto.score);
+  }
+
+  @Get("eligibility")
+  @ApiOperation({
+    summary: "Check if user is eligible to mint a certificate",
+    description: "Returns eligibility status, completion percentage, and congratulations message if applicable"
+  })
+  checkEligibility(@CurrentUser() user: User) {
+    return this.certificatesService.checkEligibility(user.id);
   }
 
   @Get("me")
