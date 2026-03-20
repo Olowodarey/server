@@ -21,7 +21,7 @@ export class PromptBuilderService {
   constructor(
     @InjectRepository(UserProgress)
     private readonly progressRepo: Repository<UserProgress>,
-  ) { }
+  ) {}
 
   async build(user: User, session: ChatSession): Promise<string> {
     const completedSteps = await this.progressRepo.count({

@@ -120,7 +120,6 @@ const CURRICULUM = [
       },
     ],
   },
-
 ];
 
 @Injectable()
@@ -128,7 +127,7 @@ export class CoursesService {
   constructor(
     @InjectRepository(UserProgress)
     private readonly progressRepo: Repository<UserProgress>,
-  ) { }
+  ) {}
 
   getCurriculum() {
     return CURRICULUM;
@@ -139,9 +138,12 @@ export class CoursesService {
    */
   getTotalStepsInCurriculum(): number {
     return CURRICULUM.reduce((total, course) => {
-      return total + course.lessons.reduce((lessonTotal, lesson) => {
-        return lessonTotal + lesson.steps.length;
-      }, 0);
+      return (
+        total +
+        course.lessons.reduce((lessonTotal, lesson) => {
+          return lessonTotal + lesson.steps.length;
+        }, 0)
+      );
     }, 0);
   }
 
@@ -225,9 +227,8 @@ export class CoursesService {
       where: { userId, state: StepState.COMPLETED },
     });
 
-    const progressPercentage = totalSteps > 0
-      ? Math.round((completedSteps / totalSteps) * 100)
-      : 0;
+    const progressPercentage =
+      totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
     const isComplete = progressPercentage === 100;
 
@@ -248,12 +249,14 @@ export class CoursesService {
           courseTitle: course.title,
           completedSteps: courseCompletedSteps,
           totalSteps: courseTotalSteps,
-          progressPercentage: courseTotalSteps > 0
-            ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
-            : 0,
-          isComplete: courseCompletedSteps === courseTotalSteps && courseTotalSteps > 0,
+          progressPercentage:
+            courseTotalSteps > 0
+              ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
+              : 0,
+          isComplete:
+            courseCompletedSteps === courseTotalSteps && courseTotalSteps > 0,
         };
-      })
+      }),
     );
 
     return {
@@ -290,9 +293,10 @@ export class CoursesService {
         0,
       );
       const courseCompletedSteps = completedByCourse.get(course.id) || 0;
-      const progressPercentage = courseTotalSteps > 0
-        ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
-        : 0;
+      const progressPercentage =
+        courseTotalSteps > 0
+          ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
+          : 0;
 
       return {
         courseId: course.id,
@@ -308,9 +312,8 @@ export class CoursesService {
     const totalCourses = CURRICULUM.length;
     const totalSteps = this.getTotalStepsInCurriculum();
     const completedSteps = allProgress.length;
-    const overallPercentage = totalSteps > 0
-      ? Math.round((completedSteps / totalSteps) * 100)
-      : 0;
+    const overallPercentage =
+      totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
     return {
       completedCourses,

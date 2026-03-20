@@ -21,7 +21,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   /**
    * Generate a sign challenge nonce for the given wallet address.
