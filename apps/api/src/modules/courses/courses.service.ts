@@ -134,6 +134,17 @@ export class CoursesService {
     return CURRICULUM;
   }
 
+  /**
+   * Calculate total steps across all courses in the curriculum
+   */
+  getTotalStepsInCurriculum(): number {
+    return CURRICULUM.reduce((total, course) => {
+      return total + course.lessons.reduce((lessonTotal, lesson) => {
+        return lessonTotal + lesson.steps.length;
+      }, 0);
+    }, 0);
+  }
+
   getCourseById(courseId: number) {
     return CURRICULUM.find((c) => c.id === courseId) ?? null;
   }
@@ -187,8 +198,127 @@ export class CoursesService {
       record = this.progressRepo.create({ userId, courseId, lessonId, stepId });
     }
 
+    // Only update if not already completed
+    const wasAlreadyCompleted = record.state === StepState.COMPLETED;
     record.state = StepState.COMPLETED;
     record.completedAt = new Date();
-    return this.progressRepo.save(record);
+    await this.progressRepo.save(record);
+
+    // Check if entire curriculum is now complete
+    const overallProgress = await this.getOverallProgress(userId);
+
+    return {
+      ...record,
+      curriculumComplete: overallProgress.isComplete,
+      overallProgressPercentage: overallProgress.progressPercentage,
+      justCompleted: !wasAlreadyCompleted,
+    };
+  }
+
+  /**
+   * Get user's overall progress across all courses
+   */
+  async getOverallProgress(userId: string) {
+    const totalSteps = this.getTotalStepsInCurriculum();
+
+    const completedSteps = await this.progressRepo.count({
+      where: { userId, state: StepState.COMPLETED },
+    });
+
+    const progressPercentage = totalSteps > 0
+      ? Math.round((completedSteps / totalSteps) * 100)
+      : 0;
+
+    const isComplete = progressPercentage === 100;
+
+    // Get progress breakdown by course
+    const courseProgress = await Promise.all(
+      CURRICULUM.map(async (course) => {
+        const courseCompletedSteps = await this.progressRepo.count({
+          where: { userId, courseId: course.id, state: StepState.COMPLETED },
+        });
+
+        const courseTotalSteps = course.lessons.reduce(
+          (acc, l) => acc + l.steps.length,
+          0,
+        );
+
+        return {
+          courseId: course.id,
+          courseTitle: course.title,
+          completedSteps: courseCompletedSteps,
+          totalSteps: courseTotalSteps,
+          progressPercentage: courseTotalSteps > 0
+            ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
+            : 0,
+          isComplete: courseCompletedSteps === courseTotalSteps && courseTotalSteps > 0,
+        };
+      })
+    );
+
+    return {
+      totalSteps,
+      completedSteps,
+      progressPercentage,
+      isComplete,
+      courseProgress,
+    };
+  }
+
+  /**
+   * Get progress summary across all courses (optimized for frontend)
+   * Single endpoint to replace multiple individual course progress calls
+   * Makes only ONE database query instead of N queries (one per course)
+   */
+  async getProgressSummary(userId: string) {
+    // Fetch all user progress records in one query
+    const allProgress = await this.progressRepo.find({
+      where: { userId, state: StepState.COMPLETED },
+    });
+
+    // Build a map of courseId -> completed step count
+    const completedByCourse = new Map<number, number>();
+    for (const record of allProgress) {
+      const current = completedByCourse.get(record.courseId) || 0;
+      completedByCourse.set(record.courseId, current + 1);
+    }
+
+    // Calculate progress for each course
+    const courses = CURRICULUM.map((course) => {
+      const courseTotalSteps = course.lessons.reduce(
+        (acc, l) => acc + l.steps.length,
+        0,
+      );
+      const courseCompletedSteps = completedByCourse.get(course.id) || 0;
+      const progressPercentage = courseTotalSteps > 0
+        ? Math.round((courseCompletedSteps / courseTotalSteps) * 100)
+        : 0;
+
+      return {
+        courseId: course.id,
+        progressPercentage,
+        completedSteps: courseCompletedSteps,
+        totalSteps: courseTotalSteps,
+        isComplete: progressPercentage === 100,
+      };
+    });
+
+    // Calculate overall stats
+    const completedCourses = courses.filter((c) => c.isComplete).length;
+    const totalCourses = CURRICULUM.length;
+    const totalSteps = this.getTotalStepsInCurriculum();
+    const completedSteps = allProgress.length;
+    const overallPercentage = totalSteps > 0
+      ? Math.round((completedSteps / totalSteps) * 100)
+      : 0;
+
+    return {
+      completedCourses,
+      totalCourses,
+      overallPercentage,
+      completedSteps,
+      totalSteps,
+      courses,
+    };
   }
 }

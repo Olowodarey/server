@@ -16,7 +16,7 @@ import { CoursesService } from "./courses.service";
 @ApiBearerAuth("JWT")
 @Controller("courses")
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(private readonly coursesService: CoursesService) { }
 
   @Public()
   @Get()
@@ -63,5 +63,23 @@ export class CoursesController {
       lessonId,
       stepId,
     );
+  }
+
+  @Get("progress/overall")
+  @ApiOperation({
+    summary: "Get user's overall progress across all courses",
+    description: "Returns completion status, percentage, and breakdown by course. Use this to determine if user should be congratulated and can mint certificate."
+  })
+  getOverallProgress(@CurrentUser() user: User) {
+    return this.coursesService.getOverallProgress(user.id);
+  }
+
+  @Get("progress/summary")
+  @ApiOperation({
+    summary: "Get optimized progress summary for all courses",
+    description: "Single endpoint that returns progress for all courses in one call. Use this on learning path page and hero widget instead of making multiple requests."
+  })
+  getProgressSummary(@CurrentUser() user: User) {
+    return this.coursesService.getProgressSummary(user.id);
   }
 }
