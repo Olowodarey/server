@@ -5,11 +5,16 @@ import { Certificate } from "@app/database/entities/certificate.entity";
 import { CertificatesController } from "./certificates.controller";
 import { CertificatesService } from "./certificates.service";
 import { StacksNftService } from "./stacks/stacks-nft.service";
+import { CoursesModule } from "../courses/courses.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Certificate]), HttpModule],
+  imports: [
+    TypeOrmModule.forFeature([Certificate]),
+    HttpModule,
+    CoursesModule,
+  ],
   controllers: [CertificatesController],
   providers: [CertificatesService, StacksNftService],
   exports: [CertificatesService],
 })
-export class CertificatesModule {}
+export class CertificatesModule { }
