@@ -23,7 +23,9 @@ describe("AppController (e2e)", () => {
       }),
     );
 
-    app.setGlobalPrefix("api/v1");
+    app.setGlobalPrefix("api/v1", {
+      exclude: ["/"],
+    });
 
     await app.init();
   });
@@ -32,8 +34,19 @@ describe("AppController (e2e)", () => {
     await app.close();
   });
 
-  it("/ (GET) - should return 404 for root", () => {
-    return request(app.getHttpServer()).get("/").expect(404);
+  it("/ (GET) - should return API information", () => {
+    return request(app.getHttpServer())
+      .get("/")
+      .expect(200)
+      .expect((res) => {
+        // Response is wrapped by TransformInterceptor
+        expect(res.body).toHaveProperty("success", true);
+        expect(res.body).toHaveProperty("data");
+        expect(res.body.data).toHaveProperty("name", "Stacks Academy API");
+        expect(res.body.data).toHaveProperty("version");
+        expect(res.body.data).toHaveProperty("status", "operational");
+        expect(res.body.data).toHaveProperty("endpoints");
+      });
   });
 
   it("/api/v1/courses (GET) - should return courses list", () => {

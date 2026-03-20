@@ -19,8 +19,10 @@ import { CertificatesModule } from "./modules/certificates/certificates.module";
 import { GalleryModule } from "./modules/gallery/gallery.module";
 import { BuildersModule } from "./modules/builders/builders.module";
 import { HealthModule } from "./modules/health/health.module";
+import { AppController } from "./app.controller";
 
 @Module({
+  controllers: [AppController],
   imports: [
     // Config first (others depend on it)
     ConfigModule,

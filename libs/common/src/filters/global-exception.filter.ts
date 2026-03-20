@@ -32,8 +32,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? message
         : (message as any)?.message || "An error occurred";
 
-    // Enhanced logging for 500 errors
+    // Log at appropriate level based on status code
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      // 500 errors are critical - log as error with full details
       this.logger.error(
         `${request.method} ${request.url} → ${status}: ${errorMessage}`,
       );
@@ -41,7 +42,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (exception instanceof Error) {
         this.logger.error("Stack trace:", exception.stack);
       }
+    } else if (status === HttpStatus.NOT_FOUND) {
+      // 404 errors are expected - log as debug/info only
+      this.logger.debug(
+        `${request.method} ${request.url} → ${status}: ${errorMessage}`,
+      );
+    } else if (status >= 400 && status < 500) {
+      // Other 4xx errors are client errors - log as warning
+      this.logger.warn(
+        `${request.method} ${request.url} → ${status}: ${errorMessage}`,
+      );
     } else {
+      // Other errors - log as error
       this.logger.error(
         `${request.method} ${request.url} → ${status}: ${errorMessage}`,
         exception instanceof Error ? exception.stack : undefined,

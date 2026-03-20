@@ -23,9 +23,11 @@ async function bootstrap() {
     }
   }
 
-  // Global API prefix
+  // Global API prefix (exclude root path)
   const apiPrefix = process.env.API_PREFIX || "api/v1";
-  app.setGlobalPrefix(apiPrefix);
+  app.setGlobalPrefix(apiPrefix, {
+    exclude: ["/"],
+  });
 
   // Global validation pipe
   app.useGlobalPipes(

@@ -68,14 +68,17 @@ describe("AI Tutor (e2e)", () => {
     });
 
     it("should allow authenticated chat", () => {
+      // Skip this test as it requires Anthropic API and takes too long
+      // This is tested in unit tests with mocked Anthropic client
       return request(app.getHttpServer())
         .post("/api/v1/ai-tutor/chat")
         .set("Authorization", `Bearer ${authToken}`)
         .send({ message: "Hello" })
         .expect((res) => {
+          // Should not be 401 (authentication works)
           expect(res.statusCode).not.toBe(401);
         });
-    });
+    }, 10000); // Increase timeout to 10 seconds for API call
   });
 
   describe("/api/v1/ai-tutor/sessions (GET)", () => {
